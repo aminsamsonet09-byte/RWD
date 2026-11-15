@@ -1,0 +1,58 @@
+name: build
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure (VS 2022, x64)
+        run: cmake --preset windows-msvc-x64
+      - name: Build
+        run: cmake --build --preset windows-msvc-x64 --config Release
+      - name: Test
+        run: ctest --preset windows-msvc-x64 -C Release --output-on-failure
+      - name: Package
+        shell: pwsh
+        run: |
+          $out = "dist/RWD_COLOR_LAB_Windows_x64"
+          New-Item -ItemType Directory -Force $out | Out-Null
+          Copy-Item -Recurse "Builds/windows-x64/bundle/Release/RWD_COLOR_LAB.ofx.bundle" $out
+          Copy-Item README.md, CHANGELOG.md $out
+          Copy-Item Documentation/INSTALLATION_GUIDE.md $out
+          Compress-Archive -Path "$out/*" -DestinationPath "dist/RWD_COLOR_LAB_Windows_x64.zip"
+      - uses: actions/upload-artifact@v4
+        with: { name: RWD_COLOR_LAB_Windows_x64, path: dist/RWD_COLOR_LAB_Windows_x64.zip }
+
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure (universal arm64 + x86_64)
+        run: cmake --preset macos-universal
+      - name: Build
+        run: cmake --build --preset macos-universal --config Release
+      - name: Test
+        run: ctest --preset macos-universal -C Release --output-on-failure
+      - name: Verify architectures
+        run: lipo -info Builds/macos-universal/bundle/Release/RWD_COLOR_LAB.ofx.bundle/Contents/MacOS/RWD_COLOR_LAB.ofx
+      - name: Package
+        run: |
+          out=dist/RWD_COLOR_LAB_macOS_universal
+          mkdir -p "$out"
+          cp -R Builds/macos-universal/bundle/Release/RWD_COLOR_LAB.ofx.bundle "$out/"
+          cp README.md CHANGELOG.md Documentation/INSTALLATION_GUIDE.md "$out/"
+          (cd dist && ditto -c -k --keepParent RWD_COLOR_LAB_macOS_universal RWD_COLOR_LAB_macOS_universal.zip)
+      - uses: actions/upload-artifact@v4
+        with: { name: RWD_COLOR_LAB_macOS_universal, path: dist/RWD_COLOR_LAB_macOS_universal.zip }
+
+  linux-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake --preset linux-dev && cmake --build --preset linux-dev && ctest --preset linux-dev --output-on-failure
