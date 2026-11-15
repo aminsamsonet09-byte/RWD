@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDisplayName</key>
+	<string>RWD COLOR LAB</string>
+	<key>CFBundleName</key>
+	<string>RWD_COLOR_LAB</string>
+	<key>CFBundleExecutable</key>
+	<string>RWD_COLOR_LAB.ofx</string>
+	<key>CFBundleIdentifier</key>
+	<string>@RWD_BUNDLE_IDENTIFIER@</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleShortVersionString</key>
+	<string>@RWD_BUNDLE_VERSION@</string>
+	<key>CFBundleVersion</key>
+	<string>@RWD_BUNDLE_VERSION@</string>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+</dict>
+</plist>
